@@ -199,6 +199,47 @@ def reset_password():
     # For this example, we'll just return a success message
     return jsonify({'message': 'Password reset email sent'}), 200
 
+@app.route('/api/tags', methods=['POST'])
+@jwt_required()
+def create_tag():
+    data = request.json
+    existing_tag = Tag.query.filter_by(name=data['name']).first()
+    if existing_tag:
+        return jsonify({"id": existing_tag.id, "name": existing_tag.name})
+    new_tag = Tag(name=data['name'])
+    db.session.add(new_tag)
+    db.session.commit()
+    return jsonify({"id": new_tag.id, "name": new_tag.name}), 201
+
+@app.route('/api/entries/<int:entry_id>/tags', methods=['POST'])
+@jwt_required()
+def add_tag_to_entry(entry_id):
+    entry = Entry.query.get_or_404(entry_id)
+    data = request.json
+    tag = Tag.query.get_or_404(data['tag_id'])
+    if tag not in entry.tags:
+        entry.tags.append(tag)
+        db.session.commit()
+    return jsonify({"message": "Tag added successfully"}), 200
+
+@app.route('/api/entries/<int:entry_id>/tags/<int:tag_id>', methods=['DELETE'])
+@jwt_required()
+def remove_tag_from_entry(entry_id, tag_id):
+    entry = Entry.query.get_or_404(entry_id)
+    tag = Tag.query.get_or_404(tag_id)
+    if tag in entry.tags:
+        entry.tags.remove(tag)
+        db.session.commit()
+    return '', 204
+
+@app.route('/api/tags/<int:tag_id>', methods=['DELETE'])
+@jwt_required()
+def delete_tag(tag_id):
+    tag = Tag.query.get_or_404(tag_id)
+    db.session.delete(tag)
+    db.session.commit()
+    return '', 204
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

@@ -29,6 +29,9 @@ function ProfilePage() {
           <p className="card-text">
             Joined: {new Date(profile.created_at).toLocaleDateString()}
           </p>
+          {/* <Link to={`/entries/${entry.id}`} className="btn btn-primary">
+                Resset Password
+          </Link> */}
         </div>
       </div>
     </div>

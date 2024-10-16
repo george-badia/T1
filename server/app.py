@@ -239,6 +239,14 @@ def delete_tag(tag_id):
     db.session.delete(tag)
     db.session.commit()
     return '', 204
+# #DELETE ENTRY THE FUNCTIONAL ONE
+# @app.route('/api/entries/<int:entry_id>', methods=['DELETE'])
+# @jwt_required()
+# def delete_entry(entry_id):
+#     entry = Entry.query.get_or_404(entry_id)
+#     db.session.delete(entry)
+#     db.session.commit()
+#     return '', 204
 
 if __name__ == '__main__':
     with app.app_context():

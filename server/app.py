@@ -239,14 +239,20 @@ def delete_tag(tag_id):
     db.session.delete(tag)
     db.session.commit()
     return '', 204
-# #DELETE ENTRY THE FUNCTIONAL ONE
-# @app.route('/api/entries/<int:entry_id>', methods=['DELETE'])
-# @jwt_required()
-# def delete_entry(entry_id):
-#     entry = Entry.query.get_or_404(entry_id)
-#     db.session.delete(entry)
-#     db.session.commit()
-#     return '', 204
+
+@app.route('/api/entries/<int:entry_id>/photos/<int:photo_id>', methods=['DELETE'])
+def delete_photo(entry_id, photo_id):
+    photo = Photo.query.filter_by(id=photo_id, entry_id=entry_id).first()
+    if not photo:
+        return jsonify({"error": "Photo not found"}), 404
+
+    try:
+        db.session.delete(photo)
+        db.session.commit()
+        return jsonify({"message": "Photo deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     with app.app_context():
